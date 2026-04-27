@@ -118,6 +118,45 @@ def top_revenue_risk(limit: int = 10) -> pd.DataFrame:
     return query_sql(query)
 
 
+def top_risk_segment_by_contract() -> pd.DataFrame:
+    query = """
+        WITH segment_risk AS (
+            SELECT
+                Contract,
+                InternetService,
+                COUNT(*) AS customers,
+                ROUND(AVG(churn_flag) * 100, 2) AS churn_rate,
+                ROUND(SUM(revenue_at_risk), 2) AS revenue_at_risk
+            FROM subscription_customers
+            GROUP BY Contract, InternetService
+        ),
+        ranked_segments AS (
+            SELECT
+                Contract,
+                InternetService,
+                customers,
+                churn_rate,
+                revenue_at_risk,
+                ROW_NUMBER() OVER (
+                    PARTITION BY Contract
+                    ORDER BY churn_rate DESC, revenue_at_risk DESC
+                ) AS risk_rank
+            FROM segment_risk
+        )
+        SELECT
+            Contract,
+            InternetService,
+            customers,
+            churn_rate,
+            revenue_at_risk,
+            risk_rank
+        FROM ranked_segments
+        WHERE risk_rank = 1
+        ORDER BY churn_rate DESC, revenue_at_risk DESC
+    """
+    return query_sql(query)
+
+
 CODE_SNIPPETS = {
     "python_feature_engineering": """
 cleaned["churn_flag"] = cleaned["Churn"].map({"Yes": 1, "No": 0}).fillna(0).astype(int)
@@ -134,5 +173,22 @@ SELECT
 FROM subscription_customers
 GROUP BY Contract
 ORDER BY churn_rate DESC;
+    """.strip(),
+    "sql_window_function": """
+WITH segment_risk AS (
+    SELECT
+        Contract,
+        InternetService,
+        COUNT(*) AS customers,
+        ROUND(AVG(churn_flag) * 100, 2) AS churn_rate
+    FROM subscription_customers
+    GROUP BY Contract, InternetService
+)
+SELECT *,
+    ROW_NUMBER() OVER (
+        PARTITION BY Contract
+        ORDER BY churn_rate DESC
+    ) AS risk_rank
+FROM segment_risk;
     """.strip(),
 }

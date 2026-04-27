@@ -14,6 +14,7 @@ import streamlit as st
 from src.analysis import (
     CODE_SNIPPETS,
     cohort_summary,
+    churn_heatmap,
     get_build_metadata,
     get_kpis,
     load_dataset,
@@ -42,7 +43,7 @@ def inject_styles() -> None:
             border-radius: 18px;
             background:
                 radial-gradient(circle at top left, rgba(176, 68, 44, 0.18), transparent 34%),
-                linear-gradient(135deg, #842828 0%, #b84545 100%);
+                linear-gradient(135deg, #f8f3ea 0%, #e7ddcc 100%);
             border: 1px solid rgba(31, 26, 23, 0.08);
             margin-bottom: 1rem;
         }
@@ -125,18 +126,24 @@ def main() -> None:
         st.plotly_chart(fig_segment, use_container_width=True)
 
     with right:
-        st.subheader("Customer mix")
-        fig_scatter = px.scatter(
-            df,
-            x="tenure",
-            y="MonthlyCharges",
-            color="Churn",
-            size="monthly_revenue",
-            hover_data=["Contract", "PaymentMethod", "InternetService"],
-            color_discrete_map={"Yes": "#B0442C", "No": "#2F6B5F"},
+        st.subheader("Churn heatmap")
+        heatmap_df = churn_heatmap()
+        fig_heatmap = px.density_heatmap(
+            heatmap_df,
+            x="tenure_band",
+            y="charge_band",
+            z="churn_rate",
+            text_auto=".1f",
+            color_continuous_scale="OrRd",
+            title="Churn Rate by Tenure and Charge Band",
+            labels={
+                "tenure_band": "Tenure band",
+                "charge_band": "Charge band",
+                "churn_rate": "Churn rate (%)",
+            },
         )
-        fig_scatter.update_layout(height=440, margin=dict(l=10, r=10, t=30, b=10))
-        st.plotly_chart(fig_scatter, use_container_width=True)
+        fig_heatmap.update_layout(height=440, margin=dict(l=10, r=10, t=60, b=10))
+        st.plotly_chart(fig_heatmap, use_container_width=True)
 
     bottom_left, bottom_right = st.columns([1, 1])
 

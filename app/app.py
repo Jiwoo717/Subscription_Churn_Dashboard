@@ -42,7 +42,7 @@ def inject_styles() -> None:
             border-radius: 18px;
             background:
                 radial-gradient(circle at top left, rgba(176, 68, 44, 0.18), transparent 34%),
-                linear-gradient(135deg, #163a5a 0%, #5099db 100%);
+                linear-gradient(135deg, #842828 0%, #b84545 100%);
             border: 1px solid rgba(31, 26, 23, 0.08);
             margin-bottom: 1rem;
         }

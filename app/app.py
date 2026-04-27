@@ -81,7 +81,6 @@ def main() -> None:
             <h1>Subscription Churn Intelligence</h1>
             <p>
                 Tools and Language Used: Python, SQL, pandas, NumPy, and Streamlit. 
-                
                 An analysis of churn, retention, cohort health, and revenue risk in a subscription business.
             </p>
         </div>

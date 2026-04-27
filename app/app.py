@@ -18,6 +18,7 @@ from src.analysis import (
     get_build_metadata,
     get_kpis,
     load_dataset,
+    top_risk_segment_by_contract,
     top_revenue_risk,
     churn_by_segment,
 )
@@ -166,10 +167,35 @@ def main() -> None:
         st.dataframe(top_revenue_risk(12), use_container_width=True, hide_index=True)
 
     st.divider()
+    ranked_df = top_risk_segment_by_contract()
+    st.subheader("Top churn-risk segment within each contract")
+    st.caption("This view is powered by a SQL window function using `ROW_NUMBER()` to rank the riskiest internet-service segment inside each contract type.")
+
+    fig_ranked = px.bar(
+        ranked_df,
+        x="Contract",
+        y="churn_rate",
+        color="InternetService",
+        text="InternetService",
+        title="Highest-Risk Internet Service Segment by Contract Type",
+        labels={
+            "Contract": "Contract type",
+            "churn_rate": "Churn rate (%)",
+            "InternetService": "Internet service",
+        },
+        color_discrete_sequence=["#B0442C", "#D98B5F", "#2F6B5F"],
+    )
+    fig_ranked.update_traces(textposition="outside")
+    fig_ranked.update_layout(height=360, margin=dict(l=10, r=10, t=60, b=10))
+    st.plotly_chart(fig_ranked, use_container_width=True)
+
+    st.dataframe(ranked_df, use_container_width=True, hide_index=True)
+
+    st.divider()
     st.subheader("Code Spotlight")
     st.caption("These snippets are surfaced intentionally for portfolio viewers who want proof of hands-on SQL and Python work.")
 
-    snippet_left, snippet_right = st.columns(2)
+    snippet_left, snippet_right, snippet_bottom = st.columns(3)
     with snippet_left:
         st.markdown('<div class="snippet">', unsafe_allow_html=True)
         st.code(CODE_SNIPPETS["python_feature_engineering"], language="python")
@@ -177,6 +203,10 @@ def main() -> None:
     with snippet_right:
         st.markdown('<div class="snippet">', unsafe_allow_html=True)
         st.code(CODE_SNIPPETS["sql_segment_analysis"], language="sql")
+        st.markdown("</div>", unsafe_allow_html=True)
+    with snippet_bottom:
+        st.markdown('<div class="snippet">', unsafe_allow_html=True)
+        st.code(CODE_SNIPPETS["sql_window_function"], language="sql")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with st.expander("Preview cleaned dataset"):

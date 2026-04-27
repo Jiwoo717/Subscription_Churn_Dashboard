@@ -80,8 +80,9 @@ def main() -> None:
         <div class="hero">
             <h1>Subscription Churn Intelligence</h1>
             <p>
-                An interactive portfolio project showing how Python, SQL, pandas, NumPy, and Streamlit
-                can be used to analyze churn, retention, cohort health, and revenue risk in a subscription business.
+                Tools and Language Used: Python, SQL, pandas, NumPy, and Streamlit. 
+                
+                An analysis of churn, retention, cohort health, and revenue risk in a subscription business.
             </p>
         </div>
         """,

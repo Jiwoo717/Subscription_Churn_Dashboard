@@ -1,14 +1,5 @@
 # Subscription Churn Intelligence Dashboard
 
-A portfolio project that demonstrates how to use Python, SQL, NumPy, pandas, and Streamlit to analyze subscription customer behavior and churn.
-
-## Why this project works for a portfolio
-
-- Shows practical analytics work on a business problem recruiters immediately understand
-- Combines Python data wrangling, SQL querying, KPI design, and interactive dashboarding
-- Includes code snippets inside the app so viewers can see implementation details
-- Uses a public churn dataset when available and falls back to a reproducible synthetic dataset so the app still runs end to end
-
 ## Project concept
 
 The dashboard is framed as a B2C subscription business health review. It helps answer:

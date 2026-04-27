@@ -80,6 +80,26 @@ def cohort_summary() -> pd.DataFrame:
     return query_sql(query)
 
 
+def churn_heatmap() -> pd.DataFrame:
+    query = """
+        SELECT
+            tenure_band,
+            charge_band,
+            COUNT(*) AS customers,
+            ROUND(AVG(churn_flag) * 100, 2) AS churn_rate
+        FROM subscription_customers
+        GROUP BY tenure_band, charge_band
+    """
+    df = query_sql(query)
+
+    tenure_order = ["0-12m", "13-24m", "25-48m", "49-72m"]
+    charge_order = ["Low", "Mid", "High", "Premium"]
+
+    df["tenure_band"] = pd.Categorical(df["tenure_band"], categories=tenure_order, ordered=True)
+    df["charge_band"] = pd.Categorical(df["charge_band"], categories=charge_order, ordered=True)
+    return df.sort_values(["tenure_band", "charge_band"])
+
+
 def top_revenue_risk(limit: int = 10) -> pd.DataFrame:
     query = f"""
         SELECT
